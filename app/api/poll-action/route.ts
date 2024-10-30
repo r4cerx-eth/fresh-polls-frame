@@ -93,8 +93,8 @@ export async function POST(req: Request) {
     if (alreadyVoted) {
       console.log('Already voted user interaction - FID:', fid);
       
-      // Create a message image URL using placehold.co
-      const messageUrl = "https://placehold.co/1200x630/white/black/png?text=Don't+forget+the+only+person+who+cares+about+you+is+the+one+next+to+you";
+      // Create a message image URL with better formatting
+      const messageUrl = "https://placehold.co/1200x630/white/black/png?text=The+only+people%0Awho+really+care+about+you%0Are+the+ones%0next+to+you";
 
       return new NextResponse(
         `<!DOCTYPE html>
@@ -102,7 +102,6 @@ export async function POST(req: Request) {
           <head>
             <meta property="fc:frame" content="vNext" />
             <meta property="fc:frame:image" content="${messageUrl}" />
-            <meta property="fc:frame:button:1" content="❤️ Click Me" />
             <meta property="fc:frame:post:title" content="Thanks for voting!" />
             <meta property="og:title" content="2024 Presidential Poll Results" />
             <meta property="og:image" content="${messageUrl}" />
