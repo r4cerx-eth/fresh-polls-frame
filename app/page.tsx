@@ -1,4 +1,7 @@
 import { votes } from './lib/store';
+import { OFFICIAL_POLLS } from './lib/constants';
+
+// ... rest of the code ...
 
 export default function Home() {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://fresh-polls-frame.vercel.app';

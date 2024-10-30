@@ -1,14 +1,12 @@
 import { NextResponse } from 'next/server';
-import { addVote } from '../../lib/store';  // Updated path
+import { addVote } from '../../lib/store';
+import { OFFICIAL_POLLS } from '../../lib/constants';
 
 export const runtime = 'edge';
 
 export async function POST(req: Request) {
   try {
     const data = await req.json();
-    console.log('Vote received:', data);
-
-    // Handle the vote based on button index
     const buttonIndex = data.untrustedData.buttonIndex;
     const results = addVote(buttonIndex === 1 ? 'trump' : 'harris');
 
