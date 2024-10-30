@@ -99,6 +99,7 @@ export async function POST(req: Request) {
             <meta property="fc:frame" content="vNext" />
             <meta property="fc:frame:image" content="${chartUrl}" />
             <meta property="fc:frame:button:1" content="✓ Already Voted" />
+            <meta property="fc:frame:button:1:disabled" content="true" />
             <meta property="fc:frame:post:title" content="You've already voted! Current results shown above." />
             <meta property="og:title" content="2024 Presidential Poll" />
             <meta property="og:image" content="${chartUrl}" />
@@ -137,6 +138,7 @@ export async function POST(req: Request) {
             <meta property="fc:frame" content="vNext" />
             <meta property="fc:frame:image" content="${updatedChartUrl}" />
             <meta property="fc:frame:button:1" content="✓ Vote Recorded" />
+            <meta property="fc:frame:button:1:disabled" content="true" />
             <meta property="fc:frame:post:title" content="Thanks for voting! Results updated." />
             <meta property="og:title" content="2024 Presidential Poll" />
             <meta property="og:image" content="${updatedChartUrl}" />
@@ -150,7 +152,6 @@ export async function POST(req: Request) {
           }
         }
       );
-    }
 
     // Default response for initial load or invalid button
     return new NextResponse(
