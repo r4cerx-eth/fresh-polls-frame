@@ -33,9 +33,34 @@ function createChartConfig(trumpVotes: number, harrisVotes: number) {
   };
 }
 
-// ... previous imports and createChartConfig function ...
+function createErrorResponse(message: string = 'Error processing vote. Please try again.') {
+  const errorImageUrl = 'https://placehold.co/600x400?text=Error+Processing+Vote';
+  return new NextResponse(
+    `<!DOCTYPE html>
+    <html>
+      <head>
+        <meta property="fc:frame" content="vNext" />
+        <meta property="fc:frame:image" content="${errorImageUrl}" />
+        <meta property="fc:frame:button:1" content="Vote Trump" />
+        <meta property="fc:frame:button:2" content="Vote Harris" />
+        <meta property="fc:frame:post:title" content="${message}" />
+        <meta property="og:title" content="2024 Presidential Poll" />
+        <meta property="og:image" content="${errorImageUrl}" />
+      </head>
+    </html>`,
+    {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/html',
+        'Access-Control-Allow-Origin': '*'
+      }
+    }
+  );
+}
 
 export async function POST(req: Request) {
+  let chartUrl: string;
+  
   try {
     const data = await req.json();
     console.log('Received data:', data);
@@ -50,7 +75,7 @@ export async function POST(req: Request) {
       parseFloat(currentResults.trump), 
       parseFloat(currentResults.harris)
     );
-    const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=1200&h=630&bkg=white&f=Arial`;
+    chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=1200&h=630&bkg=white&f=Arial`;
 
     try {
       // Only try to record vote if it's a valid voting button
@@ -90,7 +115,6 @@ export async function POST(req: Request) {
       if (error instanceof Error && error.message === 'User has already voted') {
         console.log('Duplicate vote detected for FID:', fid);
         
-        // Return the same voting options with a note about already voting
         return new NextResponse(
           `<!DOCTYPE html>
           <html>
@@ -118,27 +142,6 @@ export async function POST(req: Request) {
 
   } catch (error) {
     console.error('Fatal error:', error);
-    // Return a generic error state with voting options still available
-    return new NextResponse(
-      `<!DOCTYPE html>
-      <html>
-        <head>
-          <meta property="fc:frame" content="vNext" />
-          <meta property="fc:frame:image" content="${chartUrl || 'https://placehold.co/600x400?text=Error+Processing+Vote'}" />
-          <meta property="fc:frame:button:1" content="Vote Trump" />
-          <meta property="fc:frame:button:2" content="Vote Harris" />
-          <meta property="fc:frame:post:title" content="Error processing vote. Please try again." />
-          <meta property="og:title" content="2024 Presidential Poll" />
-          <meta property="og:image" content="${chartUrl || 'https://placehold.co/600x400?text=Error+Processing+Vote'}" />
-        </head>
-      </html>`,
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'text/html',
-          'Access-Control-Allow-Origin': '*'
-        }
-      }
-    );
+    return createErrorResponse();
   }
 }
