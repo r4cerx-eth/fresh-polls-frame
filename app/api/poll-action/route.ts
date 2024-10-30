@@ -93,12 +93,8 @@ export async function POST(req: Request) {
     if (alreadyVoted) {
       console.log('Already voted user interaction - FID:', fid);
       
-      // Create a simple text-based chart URL
-      const text1 = encodeURIComponent("The only people who really");
-      const text2 = encodeURIComponent("care about you,");
-      const text3 = encodeURIComponent("are the ones next to you");
-      
-      const messageUrl = `https://quickchart.io/chart?width=1200&height=630&chart={type:'bar',data:{labels:[],datasets:[]},options:{plugins:{title:{display:true,text:['${text1}','${text2}','${text3}'],font:{size:60,family:'Arial'},color:'black',padding:50}},scales:{x:{display:false},y:{display:false}}}}&backgroundColor=white`;
+      // Simple text image with line breaks
+      const messageUrl = "https://placehold.co/1200x630/ffffff/000000?text=The+only+people+who+really%0Acare+about+you,%0Aare+the+ones+next+to+you&font=arial&size=30";
 
       return new NextResponse(
         `<!DOCTYPE html>
