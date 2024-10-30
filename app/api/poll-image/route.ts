@@ -55,6 +55,7 @@ export async function GET() {
     headers: {
       'Content-Type': 'image/svg+xml',
       'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Access-Control-Allow-Origin': '*',  // Add this line
     },
   });
 }
