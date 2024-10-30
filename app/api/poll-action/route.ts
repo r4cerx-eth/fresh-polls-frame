@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { addVote } from '../../lib/store';
+import { recordVote, getVotePercentages } from '../../lib/kv-store';
 import { OFFICIAL_POLLS } from '../../lib/constants';
 
 export const runtime = 'edge';
@@ -8,9 +8,15 @@ export async function POST(req: Request) {
   try {
     const data = await req.json();
     const buttonIndex = data.untrustedData.buttonIndex;
-    const results = addVote(buttonIndex === 1 ? 'trump' : 'harris');
+    const fid = data.untrustedData.fid;
 
-    const chartConfig = {
+    try {
+      const results = await recordVote(
+        fid, 
+        buttonIndex === 1 ? 'trump' : 'harris'
+      );
+
+      const chartConfig = {
       type: 'bar',
       data: {
         labels: ['Trump', 'Harris', 'Trump', 'Harris'],
@@ -101,17 +107,46 @@ export async function POST(req: Request) {
         },
       }
     );
-  } catch (error) {
-    console.error('Error processing vote:', error);
-    return new NextResponse(
-      JSON.stringify({ error: 'Failed to process vote' }),
-      {
-        status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
+  } catch (voteError) {
+    if (voteError.message === 'User has already voted') {
+      const currentResults = await getVotePercentages();
+      // Return a message indicating they've already voted
+      return new NextResponse(
+        `<!DOCTYPE html>
+        <html>
+          <head>
+            <meta property="fc:frame" content="vNext" />
+            <meta property="fc:frame:image" content="${chartUrl}" />
+            <meta property="fc:frame:button:1" content="Already Voted!" />
+            <meta property="og:title" content="2024 Presidential Poll" />
+            <meta property="og:image" content="${chartUrl}" />
+          </head>
+          <body>
+            <p>You have already voted in this poll!</p>
+          </body>
+        </html>`,
+        {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/html',
+            'Access-Control-Allow-Origin': '*',
+          },
+        }
+      );
+    }
+    throw voteError;
+  }
+
+} catch (error) {
+  console.error('Error processing vote:', error);
+  return new NextResponse(
+    JSON.stringify({ error: 'Failed to process vote' }),
+    {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
         },
-      }
     );
   }
 }
