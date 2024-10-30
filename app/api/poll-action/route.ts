@@ -94,7 +94,7 @@ export async function POST(req: Request) {
       console.log('Already voted user interaction - FID:', fid);
       
       // Create a message image URL with better formatting and smaller text
-      const messageUrl = "https://placehold.co/1200x730/white/black/png?text=The+only+people+who+really%0Acare+about+you,%0Aare+the+ones+next+to+you%0A&fontsize=32";
+      const messageUrl = "https://placehold.co/1200x630/white/black/png?text=The+only+people+who+care+about+you%0Aare+the+ones+next+to+you";
       return new NextResponse(
         `<!DOCTYPE html>
         <html>
