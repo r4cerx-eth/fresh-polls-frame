@@ -93,7 +93,31 @@ export async function POST(req: Request) {
     if (alreadyVoted) {
       console.log('Already voted user interaction - FID:', fid);
       
-      const messageUrl = "https://placehold.co/1200x630/white/black/png?text=The+only+person+who+really%0Acares+about+you,%0Ais+the+one+next+to+you&font=arial&size=28";
+      const messageConfig = {
+        type: 'text',
+        data: {
+          text: [
+            "The only person who really",
+            "cares about you,",
+            "is the one next to you"
+          ]
+        },
+        options: {
+          font: {
+            size: 48,
+            family: 'Arial'
+          },
+          color: 'black',
+          backgroundColor: 'white',
+          plugins: {
+            title: {
+              display: false
+            }
+          }
+        }
+      };
+
+      const messageUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(messageConfig))}&w=1200&h=630&f=Arial`;
 
       return new NextResponse(
         `<!DOCTYPE html>
