@@ -1,9 +1,5 @@
-﻿// Remove the NextResponse import since we're not using it
-// import { NextResponse } from 'next/server';
+﻿export const runtime = 'edge';
 
-export const runtime = 'edge';
-
-// Remove the unused request parameter
 export async function GET() {
   const data = {
     trump: "45.5",
@@ -12,7 +8,7 @@ export async function GET() {
     lastUpdated: new Date().toLocaleDateString()
   };
   
-  const svg = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  const svg = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg" version="1.1">
     <rect width="100%" height="100%" fill="#f8f9fa"/>
     <rect x="50" y="50" width="1100" height="530" fill="white" rx="15" />
     
@@ -55,6 +51,8 @@ export async function GET() {
       'Content-Type': 'image/svg+xml',
       'Cache-Control': 'no-cache, no-store, must-revalidate',
       'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': '*',
     },
   });
 }
