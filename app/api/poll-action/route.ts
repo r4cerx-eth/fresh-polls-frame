@@ -94,28 +94,56 @@ export async function POST(req: Request) {
       console.log('Already voted user interaction - FID:', fid);
       
       const messageConfig = {
-        type: 'text',
+        type: 'bar',
         data: {
-          text: [
-            "The only person who really",
-            "cares about you,",
-            "is the one next to you"
-          ]
+          datasets: []
         },
         options: {
-          font: {
-            size: 48,
-            family: 'Arial'
-          },
-          color: 'black',
-          backgroundColor: 'white',
           plugins: {
             title: {
-              display: false
+              display: true,
+              text: [
+                'The only person who really',
+                'cares about you,',
+                'is the one next to you'
+              ],
+              font: {
+                size: 40,
+                family: 'Arial'
+              },
+              color: 'black',
+              padding: 100
             }
+          },
+          scales: {
+            x: { display: false },
+            y: { display: false }
           }
         }
       };
+
+      const messageUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(messageConfig))}&w=1200&h=630&bkg=white`;
+
+      return new NextResponse(
+        `<!DOCTYPE html>
+        <html>
+          <head>
+            <meta property="fc:frame" content="vNext" />
+            <meta property="fc:frame:image" content="${messageUrl}" />
+            <meta property="fc:frame:post:title" content="Thanks for voting!" />
+            <meta property="og:title" content="2024 Presidential Poll Results" />
+            <meta property="og:image" content="${messageUrl}" />
+          </head>
+        </html>`,
+        {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/html',
+            'Access-Control-Allow-Origin': '*'
+          }
+        }
+      );
+    }
 
       const messageUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(messageConfig))}&w=1200&h=630&f=Arial`;
 
