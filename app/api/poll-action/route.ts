@@ -152,6 +152,7 @@ export async function POST(req: Request) {
           }
         }
       );
+    }
 
     // Default response for initial load or invalid button
     return new NextResponse(
@@ -184,6 +185,7 @@ export async function POST(req: Request) {
           <meta property="fc:frame" content="vNext" />
           <meta property="fc:frame:image" content="https://placehold.co/600x400?text=Error+Processing+Vote" />
           <meta property="fc:frame:button:1" content="⚠️ Error" />
+          <meta property="fc:frame:button:1:disabled" content="true" />
           <meta property="fc:frame:post:title" content="Error processing vote. Please try again." />
           <meta property="og:title" content="Error - 2024 Presidential Poll" />
           <meta property="og:image" content="https://placehold.co/600x400?text=Error+Processing+Vote" />
