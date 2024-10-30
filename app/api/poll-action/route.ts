@@ -96,10 +96,23 @@ export async function POST(req: Request) {
       const messageConfig = {
         type: 'bar',
         data: {
-          datasets: []
+          labels: [''],
+          datasets: [{
+            data: [0],
+            backgroundColor: 'white'
+          }]
         },
         options: {
+          layout: {
+            padding: {
+              top: 150,
+              bottom: 150
+            }
+          },
           plugins: {
+            legend: {
+              display: false
+            },
             title: {
               display: true,
               text: [
@@ -108,11 +121,11 @@ export async function POST(req: Request) {
                 'are the ones next to you'
               ],
               font: {
-                size: 40,
+                size: 60,
                 family: 'Arial'
               },
               color: 'black',
-              padding: 100
+              padding: 20
             }
           },
           scales: {
