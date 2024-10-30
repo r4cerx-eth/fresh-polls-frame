@@ -33,6 +33,8 @@ function createChartConfig(trumpVotes: number, harrisVotes: number) {
   };
 }
 
+// ... previous imports and createChartConfig function ...
+
 export async function POST(req: Request) {
   try {
     const data = await req.json();
@@ -42,16 +44,25 @@ export async function POST(req: Request) {
     const fid = data.untrustedData.fid;
     console.log('Processing vote - FID:', fid, 'Button:', buttonIndex);
 
+    // Get current results regardless of voting status
+    const currentResults = await getVotePercentages();
+    const chartConfig = createChartConfig(
+      parseFloat(currentResults.trump), 
+      parseFloat(currentResults.harris)
+    );
+    const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=1200&h=630&bkg=white&f=Arial`;
+
     try {
-      const results = await recordVote(
-        fid, 
-        buttonIndex === 1 ? 'trump' : 'harris'
-      );
-      console.log('Vote recorded successfully:', results);
+      // Only try to record vote if it's a valid voting button
+      if (buttonIndex === 1 || buttonIndex === 2) {
+        await recordVote(
+          fid, 
+          buttonIndex === 1 ? 'trump' : 'harris'
+        );
+        console.log('Vote recorded successfully');
+      }
 
-      const chartConfig = createChartConfig(results.trump, results.harris);
-      const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=1200&h=630&bkg=white&f=Arial`;
-
+      // Always return the current state with both voting options
       return new NextResponse(
         `<!DOCTYPE html>
         <html>
@@ -78,20 +89,17 @@ export async function POST(req: Request) {
       
       if (error instanceof Error && error.message === 'User has already voted') {
         console.log('Duplicate vote detected for FID:', fid);
-        const results = await getVotePercentages();
-        const chartConfig = createChartConfig(
-          parseFloat(results.trump), 
-          parseFloat(results.harris)
-        );
-        const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=1200&h=630&bkg=white&f=Arial`;
         
+        // Return the same voting options with a note about already voting
         return new NextResponse(
           `<!DOCTYPE html>
           <html>
             <head>
               <meta property="fc:frame" content="vNext" />
               <meta property="fc:frame:image" content="${chartUrl}" />
-              <meta property="fc:frame:button:1" content="Already Voted" />
+              <meta property="fc:frame:button:1" content="Vote Trump" />
+              <meta property="fc:frame:button:2" content="Vote Harris" />
+              <meta property="fc:frame:post:title" content="You've already voted! Current results shown above." />
               <meta property="og:title" content="2024 Presidential Poll" />
               <meta property="og:image" content="${chartUrl}" />
             </head>
@@ -110,15 +118,18 @@ export async function POST(req: Request) {
 
   } catch (error) {
     console.error('Fatal error:', error);
+    // Return a generic error state with voting options still available
     return new NextResponse(
       `<!DOCTYPE html>
       <html>
         <head>
           <meta property="fc:frame" content="vNext" />
-          <meta property="fc:frame:image" content="https://placehold.co/600x400?text=Error+Processing+Vote" />
-          <meta property="fc:frame:button:1" content="Try Again" />
-          <meta property="og:title" content="Error - 2024 Presidential Poll" />
-          <meta property="og:image" content="https://placehold.co/600x400?text=Error+Processing+Vote" />
+          <meta property="fc:frame:image" content="${chartUrl || 'https://placehold.co/600x400?text=Error+Processing+Vote'}" />
+          <meta property="fc:frame:button:1" content="Vote Trump" />
+          <meta property="fc:frame:button:2" content="Vote Harris" />
+          <meta property="fc:frame:post:title" content="Error processing vote. Please try again." />
+          <meta property="og:title" content="2024 Presidential Poll" />
+          <meta property="og:image" content="${chartUrl || 'https://placehold.co/600x400?text=Error+Processing+Vote'}" />
         </head>
       </html>`,
       {
