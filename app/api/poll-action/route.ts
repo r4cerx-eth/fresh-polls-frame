@@ -93,8 +93,8 @@ export async function POST(req: Request) {
     if (alreadyVoted) {
       console.log('Already voted user interaction - FID:', fid);
       
-      // Simple text image with line breaks
-      const messageUrl = "https://placehold.co/1200x630/ffffff/000000?text=The+only+people+who+really%0Acare+about+you,%0Aare+the+ones+next+to+you&font=arial&size=30";
+      // Using dummyimage.com instead
+      const messageUrl = "https://dummyimage.com/1200x630/ffffff/000000.png&text=The+only+people+who+really%0Acare+about+you,%0Aare+the+ones+next+to+you";
 
       return new NextResponse(
         `<!DOCTYPE html>
