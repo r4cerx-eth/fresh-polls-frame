@@ -1,6 +1,7 @@
 export default function Home() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL 
-  // Create a more sophisticated chart configuration
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://fresh-polls-frame.vercel.app';
+  
+  // Chart configuration
   const chartConfig = {
     type: 'bar',
     data: {
@@ -39,7 +40,6 @@ export default function Home() {
     }
   };
 
-  // Convert to URL-safe string
   const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=1200&h=630&bkg=white&f=Arial`;
   
   return (
@@ -49,7 +49,7 @@ export default function Home() {
         <meta property="fc:frame:image" content={chartUrl} />
         <meta property="fc:frame:button:1" content="Vote Trump" />
         <meta property="fc:frame:button:2" content="Vote Harris" />
-        <meta property="fc:frame:post_url" content={`${baseUrl}/api/poll-action`} />
+        <meta property="fc:frame:post_url" content={`${baseUrl}api/poll-action`} /> {/* Removed leading slash */}
         
         <meta property="og:title" content="2024 Presidential Poll" />
         <meta property="og:description" content="Cast your vote in the 2024 Presidential Poll" />
