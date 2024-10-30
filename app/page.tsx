@@ -1,4 +1,4 @@
-import { votes } from '@/app/lib/store';
+import { votes } from './lib/store';
 
 export default function Home() {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://fresh-polls-frame.vercel.app';
