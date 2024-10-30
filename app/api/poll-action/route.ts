@@ -7,7 +7,6 @@ export async function POST(req: Request) {
     const data = await req.json();
     console.log('Vote received:', data);
 
-    // Create chart config for the response
     const chartConfig = {
       type: 'bar',
       data: {
@@ -48,22 +47,29 @@ export async function POST(req: Request) {
 
     const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=1200&h=630&bkg=white&f=Arial`;
 
-    // Return the Frame response
+    // Simplified Frame response
     return new NextResponse(
-      JSON.stringify({
-        frames: [{
-          version: 'vNext',
-          image: chartUrl,
-          buttons: [
-            { label: 'Vote Trump', action: 'post' },
-            { label: 'Vote Harris', action: 'post' }
-          ],
-        }]
-      }),
+      `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta property="fc:frame" content="vNext" />
+          <meta property="fc:frame:image" content="${chartUrl}" />
+          <meta property="fc:frame:button:1" content="Vote Trump" />
+          <meta property="fc:frame:button:2" content="Vote Harris" />
+          <meta property="og:title" content="2024 Presidential Poll" />
+          <meta property="og:description" content="Cast your vote in the 2024 Presidential Poll" />
+          <meta property="og:image" content="${chartUrl}" />
+        </head>
+        <body>
+          <p>Thanks for voting!</p>
+        </body>
+      </html>
+      `,
       {
         status: 200,
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'text/html',
           'Access-Control-Allow-Origin': '*',
         },
       }
