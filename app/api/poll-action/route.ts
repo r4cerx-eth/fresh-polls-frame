@@ -4,12 +4,33 @@ import { OFFICIAL_POLLS } from '../../lib/constants';
 
 export const runtime = 'edge';
 
-// Define custom error type
-class VoteError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'VoteError';
-  }
+function createChartConfig(trumpVotes: number, harrisVotes: number) {
+  return {
+    type: 'bar',
+    data: {
+      labels: ['Trump', 'Harris', 'Trump', 'Harris'],
+      datasets: [
+        {
+          label: 'Official Polls',
+          data: [OFFICIAL_POLLS.trump, OFFICIAL_POLLS.harris, null, null],
+          backgroundColor: ['#E51D24', '#0000FF'],
+          borderColor: ['#C41920', '#0000DD'],
+          borderWidth: 2,
+          borderRadius: 8,
+          barPercentage: 0.8,
+        },
+        {
+          label: 'Frame Votes',
+          data: [null, null, Number(trumpVotes), Number(harrisVotes)],
+          backgroundColor: ['rgba(229,29,36,0.6)', 'rgba(0,0,255,0.6)'],
+          borderColor: ['#C41920', '#0000DD'],
+          borderWidth: 2,
+          borderRadius: 8,
+          barPercentage: 0.8,
+        }
+      ]
+    }
+  };
 }
 
 export async function POST(req: Request) {
@@ -24,33 +45,7 @@ export async function POST(req: Request) {
         buttonIndex === 1 ? 'trump' : 'harris'
       );
 
-      const chartConfig = {
-        type: 'bar',
-        data: {
-          labels: ['Trump', 'Harris', 'Trump', 'Harris'],
-          datasets: [
-            {
-              label: 'Official Polls',
-              data: [OFFICIAL_POLLS.trump, OFFICIAL_POLLS.harris, null, null],
-              backgroundColor: ['#E51D24', '#0000FF'],
-              borderColor: ['#C41920', '#0000DD'],
-              borderWidth: 2,
-              borderRadius: 8,
-              barPercentage: 0.8,
-            },
-            {
-              label: 'Frame Votes',
-              data: [null, null, Number(results.trump), Number(results.harris)],
-              backgroundColor: ['rgba(229,29,36,0.6)', 'rgba(0,0,255,0.6)'],
-              borderColor: ['#C41920', '#0000DD'],
-              borderWidth: 2,
-              borderRadius: 8,
-              barPercentage: 0.8,
-            }
-          ]
-        }
-      };
-
+      const chartConfig = createChartConfig(results.trump, results.harris);
       const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=1200&h=630&bkg=white&f=Arial`;
 
       return new NextResponse(
@@ -80,6 +75,10 @@ export async function POST(req: Request) {
     } catch (error) {
       if (error instanceof Error && error.message === 'User has already voted') {
         const currentResults = await getVotePercentages();
+        const chartConfig = createChartConfig(
+          parseFloat(currentResults.trump), 
+          parseFloat(currentResults.harris)
+        );
         const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=1200&h=630&bkg=white&f=Arial`;
         
         return new NextResponse(
