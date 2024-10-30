@@ -1,4 +1,5 @@
 ﻿import { NextResponse } from 'next/server';
+import { addVote } from '@/lib/store';
 
 export const runtime = 'edge';
 
@@ -7,13 +8,17 @@ export async function POST(req: Request) {
     const data = await req.json();
     console.log('Vote received:', data);
 
+    // Handle the vote based on button index
+    const buttonIndex = data.untrustedData.buttonIndex;
+    const results = addVote(buttonIndex === 1 ? 'trump' : 'harris');
+
     const chartConfig = {
       type: 'bar',
       data: {
         labels: ['Trump', 'Harris'],
         datasets: [{
           label: '2024 Presidential Poll',
-          data: [45.5, 42.3],
+          data: [results.trump, results.harris],
           backgroundColor: ['#E51D24', '#0000FF'],
           borderColor: ['#C41920', '#0000DD'],
           borderWidth: 2,
@@ -29,7 +34,7 @@ export async function POST(req: Request) {
           },
           subtitle: {
             display: true,
-            text: 'Total Votes: 1,234',
+            text: `Total Votes: ${results.totalVotes.toLocaleString()}`,
             font: { size: 16 }
           }
         },
@@ -47,7 +52,6 @@ export async function POST(req: Request) {
 
     const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=1200&h=630&bkg=white&f=Arial`;
 
-    // Simplified Frame response
     return new NextResponse(
       `
       <!DOCTYPE html>
@@ -62,7 +66,7 @@ export async function POST(req: Request) {
           <meta property="og:image" content="${chartUrl}" />
         </head>
         <body>
-          <p>Thanks for voting!</p>
+          <p>Thanks for voting! Total votes: ${results.totalVotes}</p>
         </body>
       </html>
       `,
