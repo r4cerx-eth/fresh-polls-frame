@@ -1,5 +1,5 @@
 export const OFFICIAL_POLLS = {
-    trump: 44.3,
-    harris: 41.7,
+    trump: 50,
+    harris: 50,
     source: 'RealClearPolitics Average'
   } as const;
