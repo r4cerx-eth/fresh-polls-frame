@@ -4,6 +4,17 @@ import { OFFICIAL_POLLS } from '../../lib/constants';
 
 export const runtime = 'edge';
 
+export async function OPTIONS(req: Request) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  });
+}
+
 function createChartConfig(trumpVotes: number, harrisVotes: number) {
   return {
     type: 'bar',
@@ -91,17 +102,6 @@ export async function POST(req: Request) {
     );
     const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=1200&h=630&bkg=white&f=Arial`;
 
-    export async function OPTIONS(req: Request) {
-      return new NextResponse(null, {
-        status: 200,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
-        },
-      });
-    }
-    
     // Check if user has already voted
     const alreadyVoted = await hasUserVoted(fid);
     
@@ -160,9 +160,9 @@ export async function POST(req: Request) {
           <head>
             <meta property="fc:frame" content="vNext" />
             <meta property="fc:frame:image" content="${newChartUrl}" />
-            <meta property="fc:frame:button:1" content="✓ Already Voted" />
-            <meta property="fc:frame:button:2" content="See Results" />
-            <meta property="fc:frame:post:title" content="Thanks for voting! Current results shown above." />
+            <meta property="fc:frame:button:1" content="Vote Trump" />
+            <meta property="fc:frame:button:2" content="Vote Harris" />
+            <meta property="fc:frame:post:title" content="Thanks for voting! Results above are current as of now." />
             <meta property="og:title" content="2024 Presidential Poll Results" />
             <meta property="og:image" content="${newChartUrl}" />
           </head>
