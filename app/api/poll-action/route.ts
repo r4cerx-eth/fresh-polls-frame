@@ -93,18 +93,13 @@ export async function POST(req: Request) {
     if (alreadyVoted) {
       console.log('Already voted user interaction - FID:', fid);
       
-      // Using ImageKit.io with text overlay
-      const messageUrl = "https://ik.imagekit.io/demo/tr:w-1200,h-630,bg-FFFFFF,tc-000000,txt-The%20only%20people%20who%20really%0Acare%20about%20you,%0Aare%20the%20ones%20next%20to%20you,ts-64/blank.jpg";
-
       return new NextResponse(
         `<!DOCTYPE html>
         <html>
           <head>
             <meta property="fc:frame" content="vNext" />
-            <meta property="fc:frame:image" content="${messageUrl}" />
-            <meta property="fc:frame:post:title" content="Thanks for voting!" />
-            <meta property="og:title" content="2024 Presidential Poll Results" />
-            <meta property="og:image" content="${messageUrl}" />
+            <meta property="fc:frame:post:title" content="The only people who really care about you, are the ones next to you" />
+            <meta property="og:title" content="A message for you" />
           </head>
         </html>`,
         {
