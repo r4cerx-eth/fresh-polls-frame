@@ -103,9 +103,9 @@ export async function POST(req: Request) {
             title: {
               display: true,
               text: [
-                'The only person who really',
-                'cares about you,',
-                'is the one next to you'
+                'The only people who really',
+                'care about you,',
+                'are the ones next to you'
               ],
               font: {
                 size: 40,
@@ -145,28 +145,6 @@ export async function POST(req: Request) {
       );
     }
 
-      const messageUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(messageConfig))}&w=1200&h=630&f=Arial`;
-
-      return new NextResponse(
-        `<!DOCTYPE html>
-        <html>
-          <head>
-            <meta property="fc:frame" content="vNext" />
-            <meta property="fc:frame:image" content="${messageUrl}" />
-            <meta property="fc:frame:post:title" content="Thanks for voting!" />
-            <meta property="og:title" content="2024 Presidential Poll Results" />
-            <meta property="og:image" content="${messageUrl}" />
-          </head>
-        </html>`,
-        {
-          status: 200,
-          headers: {
-            'Content-Type': 'text/html',
-            'Access-Control-Allow-Origin': '*'
-          }
-        }
-      );
-    }
     // Process new vote
     if (buttonIndex === 1 || buttonIndex === 2) {
       await recordVote(
