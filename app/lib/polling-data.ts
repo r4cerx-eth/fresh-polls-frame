@@ -11,8 +11,8 @@ export async function getRCPPolls() {
       if (!response.ok) {
         console.error('RCP API error:', response.status);
         return {
-          trump: 45.2, // Fallback values in case API fails
-          harris: 41.8
+          trump: 46.7, // Fallback values in case API fails
+          harris: 48
         };
       }
   
