@@ -162,8 +162,6 @@ export async function POST(req: Request) {
             <meta property="fc:frame" content="vNext" />
             <meta property="fc:frame:image" content="${latestChartUrl}" />
             <meta property="fc:frame:button:1" content="🔄 Refresh Results" />
-            <meta property="fc:frame:button:1:action" content="link" />
-            <meta property="fc:frame:button:1:target" content="https://fresh-polls-frame.vercel.app/api/poll-action" />
             <meta property="fc:frame:post:title" content="You've already voted! Click to refresh results." />
             <meta property="og:title" content="2024 Presidential Poll" />
             <meta property="og:image" content="${latestChartUrl}" />
