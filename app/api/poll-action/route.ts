@@ -73,11 +73,15 @@ function createChartConfig(trumpVotes: number, harrisVotes: number) {
 export async function POST(req: Request) {
   try {
     const data = await req.json();
-    console.log('Received data:', data);
+    console.log('POST Request received:', {
+      data,
+      method: req.method,
+      headers: Object.fromEntries(req.headers.entries())
+    });
 
     const buttonIndex = data.untrustedData.buttonIndex;
     const fid = data.untrustedData.fid;
-    console.log('Processing vote - FID:', fid, 'Button:', buttonIndex);
+    console.log('Processing request - FID:', fid, 'Button:', buttonIndex);
 
     // Get current results
     const currentResults = await getVotePercentages();
@@ -87,23 +91,41 @@ export async function POST(req: Request) {
     );
     const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=1200&h=630&bkg=white&f=Arial`;
 
+    export async function OPTIONS(req: Request) {
+      return new NextResponse(null, {
+        status: 200,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        },
+      });
+    }
+    
     // Check if user has already voted
     const alreadyVoted = await hasUserVoted(fid);
     
-    if (alreadyVoted || buttonIndex > 2) {
-      // Handle both already voted users and button clicks after voting
-      console.log('Showing results for voted user - FID:', fid);
+    if (alreadyVoted) {
+      console.log('Already voted user interaction - FID:', fid, 'Button:', buttonIndex);
+      // Get fresh results
+      const latestResults = await getVotePercentages();
+      const latestChartConfig = createChartConfig(
+        parseFloat(latestResults.trump), 
+        parseFloat(latestResults.harris)
+      );
+      const latestChartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(latestChartConfig))}&w=1200&h=630&bkg=white&f=Arial`;
+
       return new NextResponse(
         `<!DOCTYPE html>
         <html>
           <head>
             <meta property="fc:frame" content="vNext" />
-            <meta property="fc:frame:image" content="${chartUrl}" />
-            <meta property="fc:frame:button:1" content="✓ Already Voted" />
-            <meta property="fc:frame:button:2" content="See Results" />
-            <meta property="fc:frame:post:title" content="Current poll results shown above." />
+            <meta property="fc:frame:image" content="${latestChartUrl}" />
+            <meta property="fc:frame:button:1" content="Vote Trump" />
+            <meta property="fc:frame:button:2" content="Vote Harris" />
+            <meta property="fc:frame:post:title" content="You've already voted! Results above are current as of now." />
             <meta property="og:title" content="2024 Presidential Poll Results" />
-            <meta property="og:image" content="${chartUrl}" />
+            <meta property="og:image" content="${latestChartUrl}" />
           </head>
         </html>`,
         {
