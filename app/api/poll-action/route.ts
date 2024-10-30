@@ -92,17 +92,24 @@ export async function POST(req: Request) {
     
     if (alreadyVoted) {
       console.log('User has already voted - FID:', fid);
+      // Get fresh results
+      const latestResults = await getVotePercentages();
+      const latestChartConfig = createChartConfig(
+        parseFloat(latestResults.trump), 
+        parseFloat(latestResults.harris)
+      );
+      const latestChartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(latestChartConfig))}&w=1200&h=630&bkg=white&f=Arial`;
+
       return new NextResponse(
         `<!DOCTYPE html>
         <html>
           <head>
             <meta property="fc:frame" content="vNext" />
-            <meta property="fc:frame:image" content="${chartUrl}" />
-            <meta property="fc:frame:button:1" content="✓ Already Voted" />
-            <meta property="fc:frame:button:1:disabled" content="true" />
-            <meta property="fc:frame:post:title" content="You've already voted! Current results shown above." />
+            <meta property="fc:frame:image" content="${updatedChartUrl}" />
+            <meta property="fc:frame:button:1" content="🔄 Refresh Results" />
+            <meta property="fc:frame:post:title" content="Thanks for voting! Click to refresh results." />
             <meta property="og:title" content="2024 Presidential Poll" />
-            <meta property="og:image" content="${chartUrl}" />
+            <meta property="og:image" content="${updatedChartUrl}" />
           </head>
         </html>`,
         {
