@@ -1,5 +1,5 @@
-﻿import { NextResponse } from 'next/server';
-import { addVote } from '../../../lib/store';
+import { NextResponse } from 'next/server';
+import { addVote } from '../../lib/store';  // Updated path
 
 export const runtime = 'edge';
 
@@ -53,8 +53,7 @@ export async function POST(req: Request) {
     const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=1200&h=630&bkg=white&f=Arial`;
 
     return new NextResponse(
-      `
-      <!DOCTYPE html>
+      `<!DOCTYPE html>
       <html>
         <head>
           <meta property="fc:frame" content="vNext" />
@@ -68,8 +67,7 @@ export async function POST(req: Request) {
         <body>
           <p>Thanks for voting! Total votes: ${results.totalVotes}</p>
         </body>
-      </html>
-      `,
+      </html>`,
       {
         status: 200,
         headers: {
