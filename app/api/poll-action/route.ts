@@ -98,8 +98,10 @@ export async function POST(req: Request) {
         <html>
           <head>
             <meta property="fc:frame" content="vNext" />
+            <meta property="fc:frame:image" content="https://farcaster.group/api/blank" />
             <meta property="fc:frame:post:title" content="The only people who really care about you, are the ones next to you" />
             <meta property="og:title" content="A message for you" />
+            <meta property="og:image" content="https://farcaster.group/api/blank" />
           </head>
         </html>`,
         {
