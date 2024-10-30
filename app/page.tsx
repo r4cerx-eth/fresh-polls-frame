@@ -1,5 +1,6 @@
 export default function Home() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://fresh-polls-frame.vercel.app';
+  // Make sure the base URL doesn't end with a slash
+  const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://fresh-polls-frame.vercel.app').replace(/\/$/, '');
   
   // Chart configuration
   const chartConfig = {
@@ -49,7 +50,7 @@ export default function Home() {
         <meta property="fc:frame:image" content={chartUrl} />
         <meta property="fc:frame:button:1" content="Vote Trump" />
         <meta property="fc:frame:button:2" content="Vote Harris" />
-        <meta property="fc:frame:post_url" content={`${baseUrl}api/poll-action`} /> {/* Removed leading slash */}
+        <meta property="fc:frame:post_url" content={`${baseUrl}/api/poll-action`} /> {/* Added slash after domain */}
         
         <meta property="og:title" content="2024 Presidential Poll" />
         <meta property="og:description" content="Cast your vote in the 2024 Presidential Poll" />
