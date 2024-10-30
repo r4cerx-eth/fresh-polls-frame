@@ -93,8 +93,8 @@ export async function POST(req: Request) {
     if (alreadyVoted) {
       console.log('Already voted user interaction - FID:', fid);
       
-      // Using dummyimage.com instead
-      const messageUrl = "https://dummyimage.com/1200x630/ffffff/000000.png&text=The+only+people+who+really%0Acare+about+you,%0Aare+the+ones+next+to+you";
+      // Using ImageKit.io with text overlay
+      const messageUrl = "https://ik.imagekit.io/demo/tr:w-1200,h-630,bg-FFFFFF,tc-000000,txt-The%20only%20people%20who%20really%0Acare%20about%20you,%0Aare%20the%20ones%20next%20to%20you,ts-64/blank.jpg";
 
       return new NextResponse(
         `<!DOCTYPE html>
