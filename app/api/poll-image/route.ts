@@ -1,8 +1,10 @@
-﻿import { NextResponse } from 'next/server';
+﻿// Remove the NextResponse import since we're not using it
+// import { NextResponse } from 'next/server';
 
 export const runtime = 'edge';
 
-export async function GET(request: Request) {
+// Remove the unused request parameter
+export async function GET() {
   const data = {
     trump: "45.5",
     harris: "42.3",
