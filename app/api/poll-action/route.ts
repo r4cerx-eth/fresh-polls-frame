@@ -93,49 +93,12 @@ export async function POST(req: Request) {
     if (alreadyVoted) {
       console.log('Already voted user interaction - FID:', fid);
       
-      const messageConfig = {
-        type: 'bar',
-        data: {
-          labels: [''],
-          datasets: [{
-            data: [0],
-            backgroundColor: 'white'
-          }]
-        },
-        options: {
-          layout: {
-            padding: {
-              top: 150,
-              bottom: 150
-            }
-          },
-          plugins: {
-            legend: {
-              display: false
-            },
-            title: {
-              display: true,
-              text: [
-                'The only people who really',
-                'care about you,',
-                'are the ones next to you'
-              ],
-              font: {
-                size: 60,
-                family: 'Arial'
-              },
-              color: 'black',
-              padding: 20
-            }
-          },
-          scales: {
-            x: { display: false },
-            y: { display: false }
-          }
-        }
-      };
-
-      const messageUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(messageConfig))}&w=1200&h=630&bkg=white`;
+      // Create a simple text-based chart URL
+      const text1 = encodeURIComponent("The only people who really");
+      const text2 = encodeURIComponent("care about you,");
+      const text3 = encodeURIComponent("are the ones next to you");
+      
+      const messageUrl = `https://quickchart.io/chart?width=1200&height=630&chart={type:'bar',data:{labels:[],datasets:[]},options:{plugins:{title:{display:true,text:['${text1}','${text2}','${text3}'],font:{size:60,family:'Arial'},color:'black',padding:50}},scales:{x:{display:false},y:{display:false}}}}&backgroundColor=white`;
 
       return new NextResponse(
         `<!DOCTYPE html>
