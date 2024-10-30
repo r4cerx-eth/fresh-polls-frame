@@ -1,32 +1,38 @@
-import { getRCPPolls } from '../../lib/polling-data';
 import { NextResponse } from 'next/server';
 import { recordVote, getVotePercentages, hasUserVoted } from '../../lib/kv-store';
-import { OFFICIAL_POLLS } from '../../lib/constants';
+import { getRCPPolls } from '../../lib/polling-data';
 
 export const runtime = 'edge';
 
-export async function POST(req: Request) {
-  try {
-    const officialPolls = await getRCPPolls();
-    
-    // Update chart config function to use the real data
-    function createChartConfig(trumpVotes: number, harrisVotes: number) {
-      return {
-        type: 'bar',
-        data: {
-          labels: ['Trump', 'Harris', 'Trump', 'Harris'],
-          datasets: [
-            {
-              label: 'RCP Polls',  // Updated label
-              data: [officialPolls.trump, officialPolls.harris, null, null],
-              backgroundColor: ['#E51D24', '#0000FF'],
-              borderColor: ['#C41920', '#0000DD'],
-              borderWidth: 2,
-              borderRadius: 8,
-              barPercentage: 0.8,
-            },
+async function createChartConfig(trumpVotes: number, harrisVotes: number) {
+  const officialPolls = await getRCPPolls();
+  
+  return {
+    type: 'bar',
+    data: {
+      labels: ['Trump', 'Harris', 'Trump', 'Harris'],
+      datasets: [
+        {
+          label: 'RCP Polls',
+          data: [officialPolls.trump, officialPolls.harris, null, null],
+          backgroundColor: ['#E51D24', '#0000FF'],
+          borderColor: ['#C41920', '#0000DD'],
+          borderWidth: 2,
+          borderRadius: 8,
+          barPercentage: 0.8,
+        },
+        {
+          label: 'Frame Votes',
+          data: [null, null, trumpVotes, harrisVotes],
+          backgroundColor: ['rgba(229,29,36,0.6)', 'rgba(0,0,255,0.6)'],
+          borderColor: ['#C41920', '#0000DD'],
+          borderWidth: 2,
+          borderRadius: 8,
+          barPercentage: 0.8,
+        }
       ]
     },
+    options: {
     options: {
       indexAxis: 'y',
       scales: {
