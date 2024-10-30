@@ -70,6 +70,8 @@ function createChartConfig(trumpVotes: number, harrisVotes: number) {
   };
 }
 
+// ... previous imports and createChartConfig function ...
+
 export async function POST(req: Request) {
   try {
     const data = await req.json();
@@ -105,11 +107,11 @@ export async function POST(req: Request) {
         <html>
           <head>
             <meta property="fc:frame" content="vNext" />
-            <meta property="fc:frame:image" content="${updatedChartUrl}" />
+            <meta property="fc:frame:image" content="${latestChartUrl}" />
             <meta property="fc:frame:button:1" content="🔄 Refresh Results" />
-            <meta property="fc:frame:post:title" content="Thanks for voting! Click to refresh results." />
+            <meta property="fc:frame:post:title" content="You've already voted! Click to refresh results." />
             <meta property="og:title" content="2024 Presidential Poll" />
-            <meta property="og:image" content="${updatedChartUrl}" />
+            <meta property="og:image" content="${latestChartUrl}" />
           </head>
         </html>`,
         {
@@ -131,24 +133,23 @@ export async function POST(req: Request) {
       console.log('Vote recorded successfully');
 
       // Get updated results
-      const updatedResults = await getVotePercentages();
-      const updatedChartConfig = createChartConfig(
-        parseFloat(updatedResults.trump), 
-        parseFloat(updatedResults.harris)
+      const newResults = await getVotePercentages();
+      const newChartConfig = createChartConfig(
+        parseFloat(newResults.trump), 
+        parseFloat(newResults.harris)
       );
-      const updatedChartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(updatedChartConfig))}&w=1200&h=630&bkg=white&f=Arial`;
+      const newChartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(newChartConfig))}&w=1200&h=630&bkg=white&f=Arial`;
 
       return new NextResponse(
         `<!DOCTYPE html>
         <html>
           <head>
             <meta property="fc:frame" content="vNext" />
-            <meta property="fc:frame:image" content="${updatedChartUrl}" />
-            <meta property="fc:frame:button:1" content="✓ Vote Recorded" />
-            <meta property="fc:frame:button:1:disabled" content="true" />
-            <meta property="fc:frame:post:title" content="Thanks for voting! Results updated." />
+            <meta property="fc:frame:image" content="${newChartUrl}" />
+            <meta property="fc:frame:button:1" content="🔄 Refresh Results" />
+            <meta property="fc:frame:post:title" content="Thanks for voting! Click to refresh results." />
             <meta property="og:title" content="2024 Presidential Poll" />
-            <meta property="og:image" content="${updatedChartUrl}" />
+            <meta property="og:image" content="${newChartUrl}" />
           </head>
         </html>`,
         {
@@ -192,7 +193,6 @@ export async function POST(req: Request) {
           <meta property="fc:frame" content="vNext" />
           <meta property="fc:frame:image" content="https://placehold.co/600x400?text=Error+Processing+Vote" />
           <meta property="fc:frame:button:1" content="⚠️ Error" />
-          <meta property="fc:frame:button:1:disabled" content="true" />
           <meta property="fc:frame:post:title" content="Error processing vote. Please try again." />
           <meta property="og:title" content="Error - 2024 Presidential Poll" />
           <meta property="og:image" content="https://placehold.co/600x400?text=Error+Processing+Vote" />
