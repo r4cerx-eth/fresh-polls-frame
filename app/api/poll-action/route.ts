@@ -4,6 +4,14 @@ import { OFFICIAL_POLLS } from '../../lib/constants';
 
 export const runtime = 'edge';
 
+// Define custom error type
+class VoteError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'VoteError';
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const data = await req.json();
@@ -69,9 +77,11 @@ export async function POST(req: Request) {
         }
       );
 
-    } catch (voteError) {
-      if (voteError.message === 'User has already voted') {
+    } catch (error) {
+      if (error instanceof Error && error.message === 'User has already voted') {
         const currentResults = await getVotePercentages();
+        const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=1200&h=630&bkg=white&f=Arial`;
+        
         return new NextResponse(
           `<!DOCTYPE html>
           <html>
@@ -95,7 +105,7 @@ export async function POST(req: Request) {
           }
         );
       }
-      throw voteError;
+      throw error;
     }
 
   } catch (error) {
