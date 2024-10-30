@@ -1,18 +1,14 @@
 import { NextResponse } from 'next/server';
-import { addVote } from '../../lib/store';
+import { addVote } from '../../lib/store';  // Updated path
 
 export const runtime = 'edge';
-
-// Official poll data (you can update these numbers)
-const OFFICIAL_POLLS = {
-  trump: 44.3,
-  harris: 41.7,
-  source: 'RealClearPolitics Average'
-};
 
 export async function POST(req: Request) {
   try {
     const data = await req.json();
+    console.log('Vote received:', data);
+
+    // Handle the vote based on button index
     const buttonIndex = data.untrustedData.buttonIndex;
     const results = addVote(buttonIndex === 1 ? 'trump' : 'harris');
 
@@ -45,26 +41,13 @@ export async function POST(req: Request) {
         plugins: {
           title: {
             display: true,
-            text: ['2024 Presidential Poll', 
-                  `Official Polls vs Frame Votes (Total Frame Votes: ${results.totalVotes.toLocaleString()})`],
-            font: { size: 24, weight: 'bold' },
-            padding: 20
+            text: '2024 Presidential Poll',
+            font: { size: 24, weight: 'bold' }
           },
           subtitle: {
             display: true,
-            text: `Source: ${OFFICIAL_POLLS.source}`,
-            font: { size: 14 },
-            padding: 10
-          },
-          legend: {
-            display: true,
-            position: 'top',
-          },
-          datalabels: {
-            display: true,
-            color: '#000',
-            font: { size: 16, weight: 'bold' },
-            formatter: (value: any) => value ? value + '%' : ''
+            text: `Total Votes: ${results.totalVotes.toLocaleString()}`,
+            font: { size: 16 }
           }
         },
         scales: {
@@ -73,7 +56,7 @@ export async function POST(req: Request) {
             max: 100,
             ticks: {
               font: { size: 14 },
-              callback: (value: number) => value + '%'
+              callback: (value: number): string => value + '%'
             }
           },
           x: {
@@ -82,8 +65,7 @@ export async function POST(req: Request) {
             },
             ticks: {
               font: { size: 16, weight: 'bold' },
-              callback: function(value: any, index: number) {
-                // Only show Trump/Harris once for each pair
+              callback: function(this: any, value: number, index: number): string {
                 return index % 2 === 0 ? this.getLabelForValue(value) : '';
               }
             }
@@ -106,11 +88,11 @@ export async function POST(req: Request) {
           <meta property="fc:frame:button:1" content="Vote Trump" />
           <meta property="fc:frame:button:2" content="Vote Harris" />
           <meta property="og:title" content="2024 Presidential Poll" />
-          <meta property="og:description" content="Official Polls vs Frame Votes - Cast your vote!" />
+          <meta property="og:description" content="Cast your vote in the 2024 Presidential Poll" />
           <meta property="og:image" content="${chartUrl}" />
         </head>
         <body>
-          <p>Thanks for voting! Total frame votes: ${results.totalVotes}</p>
+          <p>Thanks for voting! Total votes: ${results.totalVotes}</p>
         </body>
       </html>`,
       {
