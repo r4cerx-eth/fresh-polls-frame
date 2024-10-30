@@ -1,5 +1,5 @@
 ﻿import { NextResponse } from 'next/server';
-import { addVote } from '@/lib/store';
+import { addVote } from '../../../lib/store';
 
 export const runtime = 'edge';
 

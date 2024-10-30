@@ -1,4 +1,4 @@
-import { votes } from '@/lib/store';
+import { votes } from '../../lib/store';
 
 export default function Home() {
   // ... rest of your imports ...
