@@ -1,3 +1,75 @@
+import { NextResponse } from 'next/server';
+import { recordVote, getVotePercentages, hasUserVoted } from '../../lib/kv-store';
+import { OFFICIAL_POLLS } from '../../lib/constants';
+
+export const runtime = 'edge';
+
+function createChartConfig(trumpVotes: number, harrisVotes: number) {
+  return {
+    type: 'bar',
+    data: {
+      labels: ['Trump', 'Harris', 'Trump', 'Harris'],
+      datasets: [
+        {
+          label: 'Official Polls',
+          data: [OFFICIAL_POLLS.trump, OFFICIAL_POLLS.harris, null, null],
+          backgroundColor: ['#E51D24', '#0000FF'],
+          borderColor: ['#C41920', '#0000DD'],
+          borderWidth: 2,
+          borderRadius: 8,
+          barPercentage: 0.8,
+        },
+        {
+          label: 'Frame Votes',
+          data: [null, null, trumpVotes, harrisVotes],
+          backgroundColor: ['rgba(229,29,36,0.6)', 'rgba(0,0,255,0.6)'],
+          borderColor: ['#C41920', '#0000DD'],
+          borderWidth: 2,
+          borderRadius: 8,
+          barPercentage: 0.8,
+        }
+      ]
+    },
+    options: {
+      indexAxis: 'y',
+      scales: {
+        x: {
+          beginAtZero: true,
+          max: 100,
+          ticks: {
+            callback: function(value: any) {
+              return value + '%';
+            }
+          }
+        },
+        y: {
+          grid: {
+            display: false
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            font: {
+              size: 14
+            }
+          }
+        },
+        title: {
+          display: true,
+          text: '2024 Presidential Poll Results',
+          font: {
+            size: 16,
+            weight: 'bold'
+          }
+        }
+      }
+    }
+  };
+}
+
 export async function POST(req: Request) {
   try {
     const data = await req.json();
@@ -66,11 +138,10 @@ export async function POST(req: Request) {
           <head>
             <meta property="fc:frame" content="vNext" />
             <meta property="fc:frame:image" content="${newChartUrl}" />
-            <meta property="fc:frame:button:1" content="🔄 Refresh Results" />
-            <meta property="fc:frame:button:1:action" content="link" />
-            <meta property="fc:frame:button:1:target" content="https://fresh-polls-frame.vercel.app/api/poll-action" />
-            <meta property="fc:frame:post:title" content="Thanks for voting! Click to refresh results." />
-            <meta property="og:title" content="2024 Presidential Poll" />
+            <meta property="fc:frame:button:1" content="✓ Already Voted" />
+            <meta property="fc:frame:button:2" content="See Results" />
+            <meta property="fc:frame:post:title" content="Thanks for voting! Current results shown above." />
+            <meta property="og:title" content="2024 Presidential Poll Results" />
             <meta property="og:image" content="${newChartUrl}" />
           </head>
         </html>`,
@@ -115,8 +186,6 @@ export async function POST(req: Request) {
           <meta property="fc:frame" content="vNext" />
           <meta property="fc:frame:image" content="https://placehold.co/600x400?text=Error+Processing+Vote" />
           <meta property="fc:frame:button:1" content="⚠️ Error" />
-          <meta property="fc:frame:button:1:action" content="link" />
-          <meta property="fc:frame:button:1:target" content="https://fresh-polls-frame.vercel.app/api/poll-action" />
           <meta property="fc:frame:post:title" content="Error processing vote. Please try again." />
           <meta property="og:title" content="Error - 2024 Presidential Poll" />
           <meta property="og:image" content="https://placehold.co/600x400?text=Error+Processing+Vote" />
