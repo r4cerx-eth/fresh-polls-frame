@@ -161,9 +161,8 @@ export async function POST(req: Request) {
           <head>
             <meta property="fc:frame" content="vNext" />
             <meta property="fc:frame:image" content="${latestChartUrl}" />
-            <meta property="fc:frame:button:1" content="🔄 Refresh Results" />
-            <meta property="fc:frame:post:title" content="You've already voted! Click to refresh results." />
-            <meta property="og:title" content="2024 Presidential Poll" />
+            <meta property="fc:frame:post:title" content="You've already voted! Current results shown above." />
+            <meta property="og:title" content="2024 Presidential Poll Results" />
             <meta property="og:image" content="${latestChartUrl}" />
           </head>
         </html>`,
