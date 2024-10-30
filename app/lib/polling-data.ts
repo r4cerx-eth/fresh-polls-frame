@@ -26,8 +26,8 @@ export async function getRCPPolls() {
     } catch (error) {
       console.error('Error fetching RCP polls:', error);
       return {
-        trump: 45.2, // Fallback values in case of error
-        harris: 41.8
+        trump: 46.7, // Fallback values in case of error
+        harris: 48
       };
     }
   }

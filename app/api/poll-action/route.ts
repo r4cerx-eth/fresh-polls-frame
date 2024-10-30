@@ -1,20 +1,18 @@
 import { NextResponse } from 'next/server';
 import { recordVote, getVotePercentages, hasUserVoted } from '../../lib/kv-store';
-import { getRCPPolls } from '../../lib/polling-data';
+import { OFFICIAL_POLLS } from '../../lib/constants';
 
 export const runtime = 'edge';
 
-async function createChartConfig(trumpVotes: number, harrisVotes: number) {
-  const officialPolls = await getRCPPolls();
-  
+function createChartConfig(trumpVotes: number, harrisVotes: number) {
   return {
     type: 'bar',
     data: {
       labels: ['Trump', 'Harris', 'Trump', 'Harris'],
       datasets: [
         {
-          label: 'RCP Polls',
-          data: [officialPolls.trump, officialPolls.harris, null, null],
+          label: 'Official Polls',
+          data: [OFFICIAL_POLLS.trump, OFFICIAL_POLLS.harris, null, null],
           backgroundColor: ['#E51D24', '#0000FF'],
           borderColor: ['#C41920', '#0000DD'],
           borderWidth: 2,
@@ -32,7 +30,6 @@ async function createChartConfig(trumpVotes: number, harrisVotes: number) {
         }
       ]
     },
-    options: {
     options: {
       indexAxis: 'y',
       scales: {
