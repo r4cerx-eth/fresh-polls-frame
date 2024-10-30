@@ -117,7 +117,7 @@ export async function POST(req: Request) {
           <head>
             <meta property="fc:frame" content="vNext" />
             <meta property="fc:frame:image" content="${blankChartUrl}" />
-            <meta property="fc:frame:post:title" content="The only people who really care about you, are the ones next to you" />
+            <meta property="fc:frame:post:title" content="The only people who really care about you, are the ones next to you ❤️" />
             <meta property="og:title" content="A message for you" />
             <meta property="og:image" content="${blankChartUrl}" />
           </head>
@@ -140,24 +140,33 @@ export async function POST(req: Request) {
       );
       console.log('Vote recorded successfully');
 
-      // Get updated results
-      const newResults = await getVotePercentages();
-      const newChartConfig = createChartConfig(
-        parseFloat(newResults.trump), 
-        parseFloat(newResults.harris)
-      );
-      const newChartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(newChartConfig))}&w=1200&h=630&bkg=white&f=Arial`;
+      const emptyChartConfig = {
+        type: 'bar',
+        data: {
+          datasets: []
+        },
+        options: {
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: { display: false },
+            y: { display: false }
+          }
+        }
+      };
+
+      const blankChartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(emptyChartConfig))}&w=1200&h=630&bkg=white`;
 
       return new NextResponse(
         `<!DOCTYPE html>
         <html>
           <head>
             <meta property="fc:frame" content="vNext" />
-            <meta property="fc:frame:image" content="${newChartUrl}" />
-            <meta property="fc:frame:button:1" content="❤️ Click Me" />
-            <meta property="fc:frame:post:title" content="Thanks for voting!" />
-            <meta property="og:title" content="2024 Presidential Poll Results" />
-            <meta property="og:image" content="${newChartUrl}" />
+            <meta property="fc:frame:image" content="${blankChartUrl}" />
+            <meta property="fc:frame:post:title" content="The only people who really care about you, are the ones next to you ❤️" />
+            <meta property="og:title" content="A message for you" />
+            <meta property="og:image" content="${blankChartUrl}" />
           </head>
         </html>`,
         {
