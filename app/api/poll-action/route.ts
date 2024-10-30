@@ -21,7 +21,7 @@ function createChartConfig(trumpVotes: number, harrisVotes: number) {
         },
         {
           label: 'Frame Votes',
-          data: [null, null, Number(trumpVotes), Number(harrisVotes)],
+          data: [null, null, trumpVotes, harrisVotes],
           backgroundColor: ['rgba(229,29,36,0.6)', 'rgba(0,0,255,0.6)'],
           borderColor: ['#C41920', '#0000DD'],
           borderWidth: 2,
@@ -36,14 +36,18 @@ function createChartConfig(trumpVotes: number, harrisVotes: number) {
 export async function POST(req: Request) {
   try {
     const data = await req.json();
+    console.log('Received data:', data);
+
     const buttonIndex = data.untrustedData.buttonIndex;
     const fid = data.untrustedData.fid;
+    console.log('Processing vote - FID:', fid, 'Button:', buttonIndex);
 
     try {
       const results = await recordVote(
         fid, 
         buttonIndex === 1 ? 'trump' : 'harris'
       );
+      console.log('Vote recorded successfully:', results);
 
       const chartConfig = createChartConfig(results.trump, results.harris);
       const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=1200&h=630&bkg=white&f=Arial`;
@@ -59,9 +63,6 @@ export async function POST(req: Request) {
             <meta property="og:title" content="2024 Presidential Poll" />
             <meta property="og:image" content="${chartUrl}" />
           </head>
-          <body>
-            <p>Thanks for voting! Total votes: ${results.totalVotes}</p>
-          </body>
         </html>`,
         {
           status: 200,
@@ -73,11 +74,14 @@ export async function POST(req: Request) {
       );
 
     } catch (error) {
+      console.log('Vote error:', error);
+      
       if (error instanceof Error && error.message === 'User has already voted') {
-        const currentResults = await getVotePercentages();
+        console.log('Duplicate vote detected for FID:', fid);
+        const results = await getVotePercentages();
         const chartConfig = createChartConfig(
-          parseFloat(currentResults.trump), 
-          parseFloat(currentResults.harris)
+          parseFloat(results.trump), 
+          parseFloat(results.harris)
         );
         const chartUrl = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}&w=1200&h=630&bkg=white&f=Arial`;
         
@@ -87,13 +91,10 @@ export async function POST(req: Request) {
             <head>
               <meta property="fc:frame" content="vNext" />
               <meta property="fc:frame:image" content="${chartUrl}" />
-              <meta property="fc:frame:button:1" content="Already Voted!" />
+              <meta property="fc:frame:button:1" content="Already Voted" />
               <meta property="og:title" content="2024 Presidential Poll" />
               <meta property="og:image" content="${chartUrl}" />
             </head>
-            <body>
-              <p>You have already voted in this poll!</p>
-            </body>
           </html>`,
           {
             status: 200,
@@ -108,13 +109,22 @@ export async function POST(req: Request) {
     }
 
   } catch (error) {
-    console.error('Error processing vote:', error);
+    console.error('Fatal error:', error);
     return new NextResponse(
-      JSON.stringify({ error: 'Failed to process vote' }),
+      `<!DOCTYPE html>
+      <html>
+        <head>
+          <meta property="fc:frame" content="vNext" />
+          <meta property="fc:frame:image" content="https://placehold.co/600x400?text=Error+Processing+Vote" />
+          <meta property="fc:frame:button:1" content="Try Again" />
+          <meta property="og:title" content="Error - 2024 Presidential Poll" />
+          <meta property="og:image" content="https://placehold.co/600x400?text=Error+Processing+Vote" />
+        </head>
+      </html>`,
       {
-        status: 500,
+        status: 200,
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'text/html',
           'Access-Control-Allow-Origin': '*'
         }
       }
